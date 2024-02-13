@@ -33,10 +33,13 @@ def main():
     time.sleep(0.1) # Give it time to process
 
     # Second part: accessing the photo and finding the green in it
-    read_image = cv2.imread(str(_time))
+    read_image = cv2.imread(str(_time) + ".jpg")
 
     # Show image
-    cv2.imshow("Test image", read_image)
+    cv2.imshow("Test image", read_image )
+    cv2.waitKey(0)
+
+    cv2.destroyAllWindows()
 
     # Sleep one second until take another photo
     time.sleep(1)
