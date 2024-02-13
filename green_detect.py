@@ -2,8 +2,19 @@
 # Megdalia Bromhal
 # References: https://pysource.com/2019/02/15/detecting-colors-hsv-color-space-opencv-with-python/
 
+# Import needed modules
+from vilib import Vilib
+from time import sleep
 import cv2
 import numpy as np
+
+# Start camera
+Vilib.camera_start(vflip=False, hflip=False)
+
+# Display camera feed on local machine
+Vilib.display(local=True)
+
+sleep(0.8) # Wait for startup
 
 cap = cv2.VideoCapture(0)
 
