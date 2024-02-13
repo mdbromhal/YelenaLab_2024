@@ -16,7 +16,8 @@ Vilib.display(local=True)
 
 sleep(0.8) # Wait for startup
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture()
+# cap = 
 
 while True:
     _, frame = cap.read()
