@@ -16,10 +16,10 @@ def main():
     Vilib.camera_start(vflip=False, hflip=False)
 
     # Display camera feed on local machine
-    Vilib.display(local=True)
+   # Vilib.display(local=True)
 
     # Defining where to store images
-    path = "/home/mickey/Pictures/vilib/photos"
+    path = "/home/mickey/scripts/Yelena_dfs/test_photos"
 
     # while True:
 
@@ -27,41 +27,40 @@ def main():
     # Defining the time so that we can name the photo by the time it was taken
     _time = time.strftime("%y-%m-%d_%H-%M-%S", time.localtime())
 
+    time.sleep(1)
     # Taking the photo, naming it with the time, storing it at path
     Vilib.take_photo(str(_time), path)
 
+    # Printing where the photo will be saved
+    print("\nThe photo save as:%s/%s.jpg"%(path, _time))
     time.sleep(0.1) # Give it time to process
 
-    # Second part: accessing the photo and finding the green in it
-    read_image = cv2.imread(str(_time))
+    # Naming the file
+    photo_name = str(_time) + ".jpg"
 
-    # Show image
-    cv2.imshow("Test image", read_image)
+    # Second part: accessing the photo and finding the green in it
+    read_image = cv2.imread("/home/mickey/scripts/Yelena_dfs/test_photos/" + photo_name) # /home/mickey/scripts/Yelena_dfs/test_photos/24-02-13_10-40-40.jpg
+
+    hsv_frame = cv2.cvtColor(read_image, cv2.COLOR_BGR2HSV)
+
+    # Defining hsv ranges for green color
+    low_green = np.array([25, 52, 72])
+    high_green = np.array([102, 255, 255])
+    green_mask = cv2.inRange(hsv_frame, low_green, high_green)
+    green = cv2.bitwise_and(read_image, read_image, mask=green_mask)
+
+
+    cv2.imshow("Image", read_image)
+    cv2.imshow("Green", green)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    cv2.imwrite("/home/mickey/scripts/Yelena_dfs/test_photos/green_mask" + photo_name, green)
 
     # Sleep one second until take another photo
     time.sleep(1)
 
-    
     Vilib.camera_close()
 
 if __name__ == "__main__":
     main()
-
-
-    # while True:
-    # _, frame = cap.read()
-    # hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    # # Green color
-    # low_green = np.array([25, 52, 72])
-    # high_green = np.array([102, 255, 255])
-    # green_mask = cv2.inRange(hsv_frame, low_green, high_green)
-    # green = cv2.bitwise_and(frame, frame, mask=green_mask)
-
-    # # Show object with green color
-    # cv2.imshow("Frame", frame)
-    # cv2.imshow("Green", green)
-
-    # key = cv2.waitKey(1)
-    # if key == 27:
-    #     break
