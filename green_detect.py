@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# 13 Feb. 2023
+# 13 Feb. 2024
 # Megdalia Bromhal
 # References: https://pysource.com/2019/02/15/detecting-colors-hsv-color-space-opencv-with-python/
 
@@ -39,7 +39,7 @@ def main():
     photo_name = str(_time) + ".jpg"
 
     # Second part: accessing the photo and finding the green in it
-<<<<<<< HEAD
+
     read_image = cv2.imread("/home/mickey/scripts/Yelena_dfs/test_photos/" + photo_name) # /home/mickey/scripts/Yelena_dfs/test_photos/24-02-13_10-40-40.jpg
 
     hsv_frame = cv2.cvtColor(read_image, cv2.COLOR_BGR2HSV)
@@ -50,22 +50,20 @@ def main():
     green_mask = cv2.inRange(hsv_frame, low_green, high_green)
     green = cv2.bitwise_and(read_image, read_image, mask=green_mask)
 
+    cv2.imwrite("/home/mickey/scripts/Yelena_dfs/test_photos/green_mask" + photo_name, green)
+
+    read_masked_image = cv2.imread(str(_time) + ".jpg")
 
     cv2.imshow("Image", read_image)
     cv2.imshow("Green", green)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    cv2.imwrite("/home/mickey/scripts/Yelena_dfs/test_photos/green_mask" + photo_name, green)
-=======
-    read_image = cv2.imread(str(_time) + ".jpg")
-
     # Show image
-    cv2.imshow("Test image", read_image )
+    cv2.imshow("Test image", read_masked_image )
     cv2.waitKey(0)
 
     cv2.destroyAllWindows()
->>>>>>> ceb80185df1dd0dba0ff67195376afb82f612ce8
 
     # Sleep one second until take another photo
     time.sleep(1)
