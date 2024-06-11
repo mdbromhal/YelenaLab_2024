@@ -13,51 +13,41 @@ import cv2
 import numpy as np
 
 
-def teal_mask_vision(center):
+def teal_mask_vision(cap):
     '''
-    Starts the video capture with Open CV, converts the frames to hsv and applies the teal mask.
+    Gets the frame from the camera capture, converts the frames to hsv and applies the teal mask.
     Then shows the masked image (only shows teal color).
     
-    return None
+    param cap: access to the camera's information when activated
+    return tmasked: the frame received masked with a teal hsv mask
     '''
+
+    # Start reading from video capture
+    ret, frame = cap.read()
+
+    # Converting the frame to HSV so we can choose which colors to mask
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # Defining hsv ranges for teal color
+    low_teal = np.array([25, 52, 72]) # Minimum hsv values # Changed from [70, 110, 30]
+    # np.array([25, 52, 72]) green
+    # np.array([70, 100, 15]) works for blue and teal!
+    # np.array([90, 110, 30]) works for blue!
+    high_teal = np.array([102, 255, 255]) # Maximum hsv values # Changed from [102, 255, 200]
+    # np.array([102, 255, 255]) green
+    # low_teal = np.array([186, 100, 15])
+    # high_teal = np.array([178, 100, 90])
     
-    # Start camera, 0 means using USB camera (1 is using raspberry pi camera)
-    cap = cv2.VideoCapture(0)
-
-    # Using a flag to start & stop teal detection so can call off when arrive at destination
-    while True:
-        
-        # Start reading from video capture
-        ret, frame = cap.read()
-
-        # Converting the frame to HSV so we can choose which colors to mask
-        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-        # Defining hsv ranges for teal color
-        low_teal = np.array([70, 100, 30]) # Minimum hsv values # Changed from [70, 110, 30]
-        # np.array([25, 52, 72]) green
-        # np.array([70, 100, 15]) works for blue and teal!
-        # np.array([90, 110, 30]) works for blue!
-        high_teal = np.array([102, 255, 200]) # Maximum hsv values
-        # np.array([102, 255, 255]) green
-        # low_teal = np.array([186, 100, 15])
-        # high_teal = np.array([178, 100, 90])
-        
-        # Creating the mask and putting it on the hsv-converted frame
-        teal_mask = cv2.inRange(hsv_frame, low_teal, high_teal)
-        
-        # Performing a bitwise AND operation on the frame with the mask, returning the frame
-        teal_masked_image = cv2.bitwise_and(frame, frame, mask=teal_mask)
-        
-        # Showing the frame from the camera
-        cv2.imshow("Teal Masked Image", teal_masked_image)
-        cv2.waitKey(1) # Continuing to show the live camera feed (if 0, shows one photo only)
-        
-        if center == "y":
-            find_center(teal_masked_image)
+    # Creating the mask and putting it on the hsv-converted frame
+    teal_mask = cv2.inRange(hsv_frame, low_teal, high_teal)
+    
+    # Performing a bitwise AND operation on the frame with the mask, returning the frame
+    tmasked = cv2.bitwise_and(frame, frame, mask=teal_mask)
+    
+    return tmasked
 
 
-def find_center(tmask_frame):
+def find_center(tmasked):
     '''
     Finding the center of the teal blob with Open CV's moments.
     First put masked image into grayscale, then convert to binary image.
@@ -67,12 +57,12 @@ def find_center(tmask_frame):
     https://learnopencv.com/find-center-of-blob-centroid-using-opencv-cpp-python/
     https://pythongeeks.org/color-grayscale-and-binary-image-conversion-in-opencv/
     
-    param tmask_frame: the teal-masked image
+    param tmasked: the teal-masked image
     return None
     '''
     
     # Converting frame to grayscale
-    gray_frame = cv2.cvtColor(tmask_frame, cv2.COLOR_BGR2GRAY)
+    gray_frame = cv2.cvtColor(tmasked, cv2.COLOR_BGR2GRAY)
     
     # Converting the grayscale frame to a binary image
     # Binary image = pixels have 2 possible intensity values: black or white (0 or 255).
@@ -88,25 +78,39 @@ def find_center(tmask_frame):
     # Don't need every moment coordinate, since we're using live video and processing fast enough
     try:
         # Calculating the x and y coordinate of centroid
-        cx = int(M["m10"] / M["m00"])
-        cy = int(M["m01"] / M["m00"])
+        tcx = int(M["m10"] / M["m00"]) # x coordinate
+        tcy = int(M["m01"] / M["m00"]) # y coordinate
         
-        # Highlighting the centroid
-        cv2.circle(tmask_frame, (cx, cy), 5, (255, 255, 255), -1)
-        
-        cv2.imshow("Centroid calculated in image", tmask_frame)
-        cv2.waitKey(1)
+        return tcx, tcy
         
     except ZeroDivisionError as e:
-        print("Error: ", e, "...Skipping that Moment coordinate")
+        print("Black blob/issue with mask; Skipping that Moment coordinate")
 
 
 def main():
     
-    # Getting the camera frames and applying a teal mask
-    teal_mask_vision("y") # True flag to signal to find center of teal, too
-
-
+    # Start camera, 0 means using USB camera (1 is using raspberry pi camera)
+    cap = cv2.VideoCapture(0)
+    
+    # Using a flag to start & stop teal detection so can call off when arrive at destination
+    while True:
+        
+        # Masking image to only find teal objects ##########
+        # Getting the camera frames and applying a teal mask
+        tmasked = teal_mask_vision(cap)
+        
+        # Showing the masked image
+        cv2.imshow("Teal Masked Image", tmasked)
+        cv2.waitKey(1) # Continuing to show the live camera feed (if 0, shows one photo only)
+        
+        # Finding center of teal object ####################
+        tcx, tcy = find_center(tmasked)
+        
+        # Highlighting the centroid
+        cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
+        
+        cv2.imshow("Centroid calculated in image", tmasked)
+        cv2.waitKey(1)
 
 if __name__ == '__main__':
     main()
