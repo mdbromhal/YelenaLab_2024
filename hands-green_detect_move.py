@@ -10,7 +10,7 @@ import mediapipe as mp # Google's Mediapipe -- for detecting landmarks on hands
 import time # time -- to calculate the frame rate (frames per second)
 import math # math -- for calculating distance between fingers for gesture recognition
 from picrawler import Picrawler # Sunfounder's Picrawler script -- for moving Yelena
-import yelena_move as move # Script that contains custom movement functions for Yelena
+import yelena_move # Script that contains custom movement functions for Yelena
 
 def init_hands():
     '''
@@ -30,7 +30,7 @@ def init_hands():
     return mpHands, hands, mpDraw
 
     
-def hand_landmarks(imageRGB, hands, mpDraw):
+def hand_landmarks(frame, mpHands, hands, mpDraw):
     '''
     Processing the results from the frame & Hands object to determine the landmarks on each hand in the frame.
     For each landmark, label with an ID and determine the center of the landmark.
@@ -122,16 +122,16 @@ def determine_command(length, speed):
     '''
     
     if (length <= 90) & (length > 60):  # Stop moving (for now)
-        move.sit(speed)
+        yelena_move.sit(speed)
 
     elif length > 120:  # Come forward (for now)
-        move.move_forward(speed)
+        yelena_move.move_forward(speed)
 
     elif length < 50:
-        move.stay(speed)
+        yelena_move.stay(speed)
 
 
-def move(hands, mpDraw):
+def move(mpHands, hands, mpDraw, cap, speed):
     '''
     Takes in the objects created from Mediapipe's hand library, reads the frames from the camera,
     and every 8th iteration, marks the hand landmarks, determines the distance between the fingers,
@@ -159,7 +159,7 @@ def move(hands, mpDraw):
         if (count % 8) == 1:
             
             # Gets the landmark list from the Hands object & image frame
-            landmark_list = hand_landmarks(frame, hands, mpDraw)
+            landmark_list = hand_landmarks(frame, mpHands, hands, mpDraw)
             
             # If we're actually finding any landmarks...
             if len(landmark_list) != 0:
@@ -203,7 +203,7 @@ def main():
 
     mpHands, hands, mpDraw = init_hands()
     
-    move(hands, mpDraw)
+    move(mpHands, hands, mpDraw, cap, speed)
         
         
 if __name__ == '__main__':

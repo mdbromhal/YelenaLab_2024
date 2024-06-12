@@ -9,6 +9,7 @@ import cv2 # Computer vision package
 import teal_detect2 # Detects teal color and finds center
 from picrawler import Picrawler # Sunfounder's code we can use to move Yelena
 import yelena_move # Library that has Yelena's personalized movements
+import time
 
 
 def main():
@@ -17,6 +18,9 @@ def main():
     
     # Start camera, 0 means using USB camera (1 is using raspberry pi camera)
     capture = cv2.VideoCapture(0)
+    
+    # Set up Yelena's legs?
+    crawler = Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]) 
 
     # We want to figure out where this is in relation to Yelena
     # i.e. to her left, to her right
@@ -31,14 +35,21 @@ def main():
     # So now what we want to do is figure out which side of the image the centroid is on
     # Only care about the horizontal distance from center
     # xc = 639 / 2
+    
+    tmasked = teal_detect2.teal_mask_vision(capture)
+    
     # Determining the size of the first image (assuming all images are the same size
-    tmasked_shape = teal_detect2.teal_mask_vision(capture).shape
+    tmasked_shape = tmasked.shape
     
     # Dividing length of image in two to find center x coordinate
-    xc = tmasked_shape[1] / 2 # tmasked_shape = [y, x, z]
-    print(xc)
+    xc = int(tmasked_shape[1] / 2) # tmasked_shape = [y, x, z]
     
-    while False:
+    # Optional: shows where divides between left and right of image
+    image = cv2.line(tmasked, (xc, 0), (xc, int(tmasked_shape[0])), (255, 255, 255), 15)
+    cv2.imshow("Divided masked frame", image)
+    cv2.waitKey(1)
+    
+    while True:
         # Sending camera feed to teel_detect2 to detect teal and find center
         tmasked = teal_detect2.teal_mask_vision(capture)
         
@@ -49,18 +60,47 @@ def main():
             
             # Drawing a circle on center and showing feed
             cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
+            cv2.line(tmasked, (xc, 0), (xc, int(tmasked_shape[0])), (255, 255, 255), 10)
             cv2.imshow("Centroid calculated in image", tmasked)
             cv2.waitKey(1)
             
+            # Determining which half the teal object is on
+            if tcx > xc:
+                print("Object to the right")
+                
+                # Basic implementation
+                crawler.do_action('turn right angle', 3) # From Sunfounder's avoid.py, can put speed as parameter
+                time.sleep(0.2)
+                # To know how much to rotate, we need to know the angle of the camera.
+                
+            elif (tcx < xc) and (tcx >= 0):
+                print("Object to the left")
+                
+                # Basic implementation
+                crawler.do_action('turn left angle', 3) # From Sunfounder's avoid.py, can put speed as parameter
+                time.sleep(0.2)
         except TypeError as e:
             print("No teal object found")
         # To save memory, we could only run find_center if there are enough teal pixels
         # But right now there's no easy way to do this that takes less memory than just running
         # this function. May improve in future.
         
-    
-        
-    
+        # Determining which half the teal object is on
+        if tcx > xc:
+            print("Object to the right")
+            
+            # Basic implementation
+            crawler.do_action('turn right angle', 3) # From Sunfounder's avoid.py, can put speed as parameter
+            time.sleep(0.2)
+            # To know how much to rotate, we need to know the angle of the camera.
+            
+        elif (tcx < xc) and (tcx >= 0):
+            print("Object to the left")
+            
+            # Basic implementation
+            crawler.do_action('turn left angle', 3) # From Sunfounder's avoid.py, can put speed as parameter
+            time.sleep(0.2)
+                
     # If it detects teal and finds its center, turn to face the teal color
     
     # Turning
