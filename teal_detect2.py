@@ -6,6 +6,7 @@
 # https://pysource.com/2019/02/15/detecting-colors-hsv-color-space-opencv-with-python/
 # https://learnopencv.com/find-center-of-blob-centroid-using-opencv-cpp-python/
 # https://pythongeeks.org/color-grayscale-and-binary-image-conversion-in-opencv/
+# https://learnopencv.com/cropping-an-image-using-opencv/
 
 # Import needed modules
 import time
@@ -24,9 +25,13 @@ def teal_mask_vision(cap):
 
     # Start reading from video capture
     ret, frame = cap.read()
+    
+    # Cropping the frame by calling crop_frame function
+    cframe = crop_frame(frame)
+    # May crop more when testing Yelena
 
     # Converting the frame to HSV so we can choose which colors to mask
-    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    hsv_frame = cv2.cvtColor(cframe, cv2.COLOR_BGR2HSV)
 
     # Defining hsv ranges for teal color
     low_teal = np.array([25, 52, 72]) # Minimum hsv values # Changed from [70, 110, 30]
@@ -42,9 +47,24 @@ def teal_mask_vision(cap):
     teal_mask = cv2.inRange(hsv_frame, low_teal, high_teal)
     
     # Performing a bitwise AND operation on the frame with the mask, returning the frame
-    tmasked = cv2.bitwise_and(frame, frame, mask=teal_mask)
+    tmasked = cv2.bitwise_and(cframe, cframe, mask=teal_mask)
     
     return tmasked
+
+
+def crop_frame(frame):
+    '''
+    Takes in the video frame and crops the frame to block view of objects above the maze or
+    too far away. We're doing this to limit the distractions Yelena sees and help guarentee
+    that Yelena is able to follow the teal disks in successive order.
+    
+    param frame: image frame from open CV video capture
+    return cropped frame
+    '''
+    # print(frame.shape)
+    # print((frame.shape[0] // 2), frame.shape[0])
+    
+    return frame[(frame.shape[0] // 2):frame.shape[0]]
 
 
 def find_center(tmasked):
@@ -84,7 +104,7 @@ def find_center(tmasked):
         return tcx, tcy
         
     except ZeroDivisionError as e:
-        print("Black blob/issue with mask; Skipping that Moment coordinate")
+        ("No teal objects in frame")
 
 
 def main():
@@ -103,14 +123,17 @@ def main():
         cv2.imshow("Teal Masked Image", tmasked)
         cv2.waitKey(1) # Continuing to show the live camera feed (if 0, shows one photo only)
         
-        # Finding center of teal object ####################
-        tcx, tcy = find_center(tmasked)
+        try:
+            # Finding center of teal object ####################
+            tcx, tcy = find_center(tmasked)
         
-        # Highlighting the centroid
-        cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
-        
-        cv2.imshow("Centroid calculated in image", tmasked)
-        cv2.waitKey(1)
+            # Highlighting the centroid
+            cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
+            
+            cv2.imshow("Centroid calculated in image", tmasked)
+            cv2.waitKey(1)
+        except ZeroDivisionError as e:
+            print("Error: ", e)
 
 if __name__ == '__main__':
     main()
