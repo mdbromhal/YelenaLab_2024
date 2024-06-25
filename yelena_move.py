@@ -4,36 +4,91 @@
 # Date: 3 June 2024
 # Purpose: library-ish of movement command functions
 
-def sit(speed):
-    
-    print('\nCommand received: SIT')
-    
-    from picrawler import Picrawler
-    crawler = Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])
+# Importing necessary modules
+from picrawler import Picrawler
+import time
 
-    ## [right front],[left front],[left rear],[right rear]
+def sit(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+    '''
+    Function using Sunfounder's code to make Yelena sit.
+    Format follows order: [right front],[left front],[left rear],[right rear]
+    
+    param speed: the speed Yelena performs the tasks.
+    param crawler: setting up Yelena's legs
+    return None
+    
+    '''
+    print('\nCommand received: SIT')
+
+    # Defining where we want Yelena's legs to go to make her sit
     new_step=[[20, 0, 0], [20, 0, 0], [20, 0, 0], [20, -5, 0]]
     # sit = [[50, 50, -33], [50, 50, -33], [50, 50, -33], [50, 50, -33]]
-
+    
+    # Using Sunfounder's code to move Yelena to sit as we've defined
     crawler.do_step(new_step, speed)
-    #print(new_step)
+    time.sleep(0.2)
 
 
-def move_forward(speed):
+def move_forward(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+    '''
+    Function using Sunfounder's code to make Yelena move forward.
     
-    print("\nCommand received: MOVE FORWARD")
+    param speed: the speed Yelena performs the tasks.
+    param crawler: setting up Yelena's legs
+    return None
+    '''
     
-    # cv2.circle(frame, (xc, yc), 10, (0, 0, 0), cv2.FILLED)
-    from picrawler import Picrawler
     print('\nCommand received: MOVE FORWARD')
-    crawler = Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])
-    #sit = [[50, 50, -33], [50, 50, -33], [50, 50, -33], [50, 50, -33]]
-    crawler.do_action('forward', 1, speed)
-    #crawler.do_step(sit, speed)
- 
+    
+    # Using a predefined movement (Sunfounder) to move Yelena forward
+    crawler.do_action('forward', 2, speed)
+    time.sleep(0.2)
 
-def stay(speed):
+
+def stay():
+    '''
+    Function that doesn't do anything as of yet. Yelena doesn't move, so she stays still.
+    
+    return None
+    '''
     
     print("\nCommand received: STAY")
+
+
+def move_right(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+    '''
+    Function that uses Sunfounder's code (avoid.py) to turn Yelena to the right by 3.
     
+    param speed: the speed Yelena performs the movement
+    param crawler: setting up Yelena's legs (Sunfounder's code)
+    return None
+    '''
+    
+    # Using a predefined movement command to move Yelena to the right
+    crawler.do_action('turn right angle', 2, speed) 
+    time.sleep(0.2)
+
+
+def move_left(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+    '''
+    Function that uses Sunfounder's code to turn Yelena to the left.
+    
+    param speed: the speed Yelena performs the movement
+    param crawler: setting up Yelena's legs (Sunfounder's code)
+    return None
+    '''
+    
+    # Using a predefined movement command to move Yelena to the left
+    crawler.do_action('turn left angle', 2, speed)
+    time.sleep(0.2)
+
+
+def main():
+    
+    # Telling Yelena to sit
+    sit()
+
+
+if __name__ == '__main__':
+    main()
 # Eof (end of file)

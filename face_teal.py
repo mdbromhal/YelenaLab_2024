@@ -9,8 +9,8 @@ import cv2 # Computer vision package
 import teal_detect2 # Detects teal color and finds center
 from picrawler import Picrawler # Sunfounder's code we can use to move Yelena
 import yelena_move # Library that has Yelena's personalized movements
-import time
 import math
+from time import sleep
 
 
 def frame_divide(frame):
@@ -30,11 +30,11 @@ def frame_divide(frame):
     xc = int(frame_shape[1] / 2) # tmasked_shape = [y, x, z]
     
     # Optional: shows where divides between left and right of image
-    divided_frame = cv2.line(frame, (xc, 0), (xc, int(frame_shape[0])), (255, 255, 255), 15)
-    cv2.imshow("Divided frame", divided_frame)
-    cv2.waitKey(1)
+    #divided_frame = cv2.line(frame, (xc, 0), (xc, int(frame_shape[0])), (255, 255, 255), 15)
+    #cv2.imshow("Divided frame", divided_frame)
+    #cv2.waitKey(1)
     
-    return xc
+    return xc, frame_shape
 
 
 def angle_line_point(x, px, py):
@@ -65,14 +65,14 @@ def main():
     # Start camera, 0 means using USB camera (1 is using raspberry pi camera)
     capture = cv2.VideoCapture(0)
     
-    # Set up Yelena's legs?
-    crawler = Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]) 
+    # Setting up Yelena's legs - Sunfounder code
+    crawler = Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])
 
     # Grabbing one cropped, masked image to use to find xc
     tmasked = teal_detect2.teal_mask_vision(capture)
     
     # Calling frame_divide to determine center x-coordinate of frame
-    xc = frame_divide(tmasked)
+    xc, tmasked_shape = frame_divide(tmasked)
     
     while True:
         # Sending camera feed to teel_detect2 to detect teal and find center
@@ -92,34 +92,38 @@ def main():
             # Determining the angle of the centroid from the center buffer
             angle = angle_line_point(xc, tcx, tcy)
             
-            # 
+            # Defining the angle of the center buffer
+            cbuff = 0.5
             
             # If the centroid is to the right of the buffer
-            if (tcx > xc) and angle > 1:
+            if (tcx > xc) and angle > cbuff:
                 print("Object to the right")
                 
-                # Basic implementation
-                #crawler.do_action('turn right angle', 3) # From Sunfounder's avoid.py, can put speed as parameter
-                #time.sleep(0.2)
+                # Using Sunfounder's code to move Yelena to the right
+                yelena_move.move_right(speed=70, crawler=crawler)
                 
             # If the centroid is to the left of the buffer
-            elif (tcx < xc) and (tcx >= 0) and angle > 1:
+            elif (tcx < xc) and (tcx >= 0) and angle > cbuff:
                 print("Object to the left")
                 
-                # Basic implementation
-                #crawler.do_action('turn left angle', 3) # From Sunfounder's avoid.py, can put speed as parameter
-                #time.sleep(0.2)
+                # Using Sunfounder's code to move Yelena to the left
+                yelena_move.move_left(speed=70, crawler=crawler)
             
             # If the centroid is in the center line buffer
-            elif angle <= 1:
+            elif angle <= cbuff:
                 print("Object in center buffer")
                 
-                # Basic implementation
-                #crawler.do_action('forward', 3) # From Sunfounder's avoid.py; speed = optional param
-                #time.sleep(0.2)
-                
+                # Using Sunfounder's code to move Yelena forward
+                yelena_move.move_forward(speed=70, crawler=crawler)
             
-        except TypeError or ZeroDivisionError as e:
+            # If centroid is on bottom of frame (Yelena on top of it)
+            elif tcx < 15:
+                print("Yelena on top of object")
+                
+                # Tell Yelena to sit
+                yelena_move.sit(crawler=crawler)
+            
+        except (TypeError, ZeroDivisionError) as e:
             print("No teal object found")
         # To save memory, we could only run find_center if there are enough teal pixels
         # But right now there's no easy way to do this that takes less memory than just running

@@ -9,7 +9,6 @@
 # https://learnopencv.com/cropping-an-image-using-opencv/
 
 # Import needed modules
-import time
 import cv2
 import numpy as np
 
@@ -103,7 +102,7 @@ def find_center(tmasked):
         
         return tcx, tcy
         
-    except ZeroDivisionError as e:
+    except (ZeroDivisionError, TypeError) as e:
         ("No teal objects in frame")
 
 
@@ -120,8 +119,8 @@ def main():
         tmasked = teal_mask_vision(cap)
         
         # Showing the masked image
-        cv2.imshow("Teal Masked Image", tmasked)
-        cv2.waitKey(1) # Continuing to show the live camera feed (if 0, shows one photo only)
+        #cv2.imshow("Teal Masked Image", tmasked)
+        #cv2.waitKey(1) # Continuing to show the live camera feed (if 0, shows one photo only)
         
         try:
             # Finding center of teal object ####################
@@ -130,10 +129,11 @@ def main():
             # Highlighting the centroid
             cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
             
+            # Showing the image with the centroid
             cv2.imshow("Centroid calculated in image", tmasked)
             cv2.waitKey(1)
-        except ZeroDivisionError as e:
-            print("Error: ", e)
+        except (ZeroDivisionError, TypeError) as e:
+            print("No teal in image.")
 
 if __name__ == '__main__':
     main()
