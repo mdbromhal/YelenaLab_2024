@@ -80,68 +80,87 @@ def main():
     # Setting a count so Yelena doesn't get stuck on a past frame
     count = 0
     
+    # Setting a solved count to use if Yelena can't find anymore teal
+    solved_cntdwn = 16 # Calculated roughly that each turn is ~ 20 degrees
+    
+    # while loop runs until Yelena can't find anymore teal
     while solving:
-        # Sending camera feed to teel_detect2 to detect teal and find center
-        tmasked = teal_detect2.teal_mask_vision(capture)
         
-        cv2.imshow("tmasked image", tmasked)
-        cv2.waitKey(1)
-        
-        # Using try/except block so code doesn't break when no teal object is found
-        try:
-            # Finding center of teal object
-            tcx, tcy = teal_detect2.find_center(tmasked)
+        # Yelena has turned arount 180 degrees and can't find teal
+        if solved_cntdwn == 0:
             
-            # Drawing a circle on center and showing feed
-            cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
-            cv2.line(tmasked, (xc, 0), (xc, int(tmasked_shape[0])), (255, 255, 255), 5)
-            cv2.imshow("Centroid calculated in image", tmasked)
-            cv2.waitKey(1)
-            
-            # Determining the angle of the centroid from the center buffer
-            angle = angle_line_point(xc, tcx, tcy)
-            
-            # Defining the angle of the center buffer
-            cbuff = 1
-            
-            if (count % 8) == 1:
-                # If the centroid is to the right of the buffer
-                if (tcx > xc) and angle > cbuff:
-                    print("Object to the right")
-                    
-                    # Using Sunfounder's code to move Yelena to the right
-                    yelena_move.move_right(speed=70, crawler=crawler)
-                    
-                # If the centroid is to the left of the buffer
-                elif (tcx < xc) and (tcx >= 0) and angle > cbuff:
-                    print("Object to the left")
-                    
-                    # Using Sunfounder's code to move Yelena to the left
-                    yelena_move.move_left(speed=70, crawler=crawler)
-                
-                # If the centroid is in the center line buffer
-                elif angle <= cbuff:
-                    print("Object in center buffer")
-                    
-                    # Using Sunfounder's code to move Yelena forward
-                    yelena_move.move_forward(speed=70, crawler=crawler)
-                
-                # If centroid is on bottom of frame (Yelena on top of it)
-                elif tcx < 15:
-                    print("Yelena on top of object")
-                    
-            # Increase the count by one so Yelena takes a command every 1/8th iteration
-            count += 1
-        
-        except (TypeError, ZeroDivisionError) as e:
-            print("No teal found, in face_teal")
-            
-            # Having Yelena sit when she finds no teal
+            # Have Yelena sit down and stop the loop
             yelena_move.sit(crawler=crawler)
             
-        # To save memory, we could only run find_center if there are enough teal pixels
-        # But right now there's no easy way to do this that takes less memory than just running
-        # this function. May improve in future.
+            # Stop the while loop
+            solving = False
+        
+        # Else, Yelena is still searching for/following teal
+        else:
+                
+            # Sending camera feed to teel_detect2 to detect teal and find center
+            tmasked = teal_detect2.teal_mask_vision(capture)
+            
+            cv2.imshow("tmasked image", tmasked)
+            cv2.waitKey(1)
+            
+            # Using try/except block so code doesn't break when no teal object is found
+            try:
+                # Finding center of teal object
+                tcx, tcy = teal_detect2.find_center(tmasked)
+                
+                # Drawing a circle on center and showing feed
+                cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
+                cv2.line(tmasked, (xc, 0), (xc, int(tmasked_shape[0])), (255, 255, 255), 5)
+                cv2.imshow("Centroid calculated in image", tmasked)
+                cv2.waitKey(1)
+                
+                # Determining the angle of the centroid from the center buffer
+                angle = angle_line_point(xc, tcx, tcy)
+                
+                # Defining the angle of the center buffer
+                cbuff = 1
+                
+                if (count % 8) == 1:
+                    # If the centroid is to the right of the buffer
+                    if (tcx > xc) and angle > cbuff:
+                        print("Object to the right")
+                        
+                        # Using Sunfounder's code to move Yelena to the right
+                        yelena_move.move_right(speed=70, crawler=crawler)
+                        
+                    # If the centroid is to the left of the buffer
+                    elif (tcx < xc) and (tcx >= 0) and angle > cbuff:
+                        print("Object to the left")
+                        
+                        # Using Sunfounder's code to move Yelena to the left
+                        yelena_move.move_left(speed=70, crawler=crawler)
+                    
+                    # If the centroid is in the center line buffer
+                    elif angle <= cbuff:
+                        print("Object in center buffer")
+                        
+                        # Using Sunfounder's code to move Yelena forward
+                        yelena_move.move_forward(speed=70, crawler=crawler)
+                    
+                    # If centroid is on bottom of frame (Yelena on top of it)
+                    elif tcx < 15:
+                        print("Yelena on top of object")
+                        
+                # Increase the count by one so Yelena takes a command every 1/8th iteration
+                count += 1
+            
+            except (TypeError, ZeroDivisionError) as e:
+                print("No teal found, in face_teal")
+                
+                # Having Yelena turn when she finds no teal
+                yelena_move.move_left(crawler=crawler)
+                
+                solved_cntdwn -= 1
+                
+            # To save memory, we could only run find_center if there are enough teal pixels
+            # But right now there's no easy way to do this that takes less memory than just running
+            # this function. May improve in future.
 
 
 if __name__ == '__main__':
