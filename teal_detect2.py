@@ -33,12 +33,13 @@ def teal_mask_vision(cap):
     hsv_frame = cv2.cvtColor(cframe, cv2.COLOR_BGR2HSV)
 
     # Defining hsv ranges for teal color
-    low_teal = np.array([25, 52, 72]) # Minimum hsv values # Changed from [70, 110, 30]
+    low_teal = np.array([70, 100, 15]) # Minimum hsv values # Changed from [70, 110, 30]
     # np.array([25, 52, 72]) green
     # np.array([70, 100, 15]) works for blue and teal!
     # np.array([90, 110, 30]) works for blue!
     high_teal = np.array([102, 255, 255]) # Maximum hsv values # Changed from [102, 255, 200]
     # np.array([102, 255, 255]) green
+    # Green & teal = [102, 255, 200]
     # low_teal = np.array([186, 100, 15])
     # high_teal = np.array([178, 100, 90])
     
@@ -103,7 +104,7 @@ def find_center(tmasked):
         return tcx, tcy
         
     except (ZeroDivisionError, TypeError) as e:
-        ("No teal objects in frame")
+        ("Error finding center in teal_detect2")
 
 
 def main():
@@ -133,7 +134,7 @@ def main():
             cv2.imshow("Centroid calculated in image", tmasked)
             cv2.waitKey(1)
         except (ZeroDivisionError, TypeError) as e:
-            print("No teal in image.")
+            print("Error finding teal in teal_detect2")
 
 if __name__ == '__main__':
     main()

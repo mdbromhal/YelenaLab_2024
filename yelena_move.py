@@ -65,7 +65,7 @@ def move_right(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
     '''
     
     # Using a predefined movement command to move Yelena to the right
-    crawler.do_action('turn right angle', 2, speed) 
+    crawler.do_action('turn right angle', 1, speed) 
     time.sleep(0.2)
 
 
@@ -79,7 +79,7 @@ def move_left(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
     '''
     
     # Using a predefined movement command to move Yelena to the left
-    crawler.do_action('turn left angle', 2, speed)
+    crawler.do_action('turn left angle', 1, speed)
     time.sleep(0.2)
 
 
@@ -87,6 +87,8 @@ def main():
     
     # Telling Yelena to sit
     sit()
+    
+    #move_left()
 
 
 if __name__ == '__main__':
