@@ -81,7 +81,7 @@ def main():
     count = 0
     
     # Setting a solved count to use if Yelena can't find anymore teal
-    solved_cntdwn = 16 # Calculated roughly that each turn is ~ 20 degrees
+    solved_cntdwn = 8 # Calculated roughly that each turn is ~ 20 degrees
     
     # while loop runs until Yelena can't find anymore teal
     while solving:
@@ -116,6 +116,11 @@ def main():
                 cbuff = 1
                 
                 if (count % 8) == 1:
+                    
+                    # Setting the solving countdown to 4 again
+                    # Making sure Yelena resets the countdown each time she finds teal again
+                    solved_cntdwn = 8
+                    
                     # If the centroid is to the right of the buffer
                     if (tcx > xc) and angle > cbuff:
                         print("Object to the right")
@@ -150,6 +155,11 @@ def main():
                         # Using Sunfounder's code to move Yelena forward
                         yelena_move.move_forward(speed=70, crawler=crawler, moves=5)
                         
+                        # Right now having her sit on the teal; later add turning to look for more
+                        yelena_move.sit(speed=50, crawler=crawler)
+                        
+                        solving = False
+                        
                 # Increase the count by one so Yelena takes a command every 1/8th iteration
                 count += 1
                 
@@ -166,10 +176,10 @@ def main():
                 # Using the count to make sure Yelena is using a recent frame
                 if (count % 8) == 1:
                     print("No teal found, looking for teal")
-                
+                        
                     # Having Yelena turn when she finds no teal
                     yelena_move.move_left(crawler=crawler, moves=3)
-                
+                    
                     solved_cntdwn -= 1
             
                 # Incrementing the count by one so Yelena takes a command every 1/8th iteration
