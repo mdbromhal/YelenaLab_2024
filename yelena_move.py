@@ -29,19 +29,20 @@ def sit(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
     time.sleep(0.2)
 
 
-def move_forward(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+def move_forward(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]), moves=2):
     '''
     Function using Sunfounder's code to make Yelena move forward.
     
     param speed: the speed Yelena performs the tasks.
     param crawler: setting up Yelena's legs
+    param moves: number of moves to complete movement (how much to move forward); [1=min, 3=max?]
     return None
     '''
     
     print('\nCommand received: MOVE FORWARD')
     
     # Using a predefined movement (Sunfounder) to move Yelena forward
-    crawler.do_action('forward', 2, speed)
+    crawler.do_action('forward', moves, speed)
     time.sleep(0.2)
 
 
@@ -55,31 +56,33 @@ def stay():
     print("\nCommand received: STAY")
 
 
-def move_right(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+def move_right(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]), moves=1):
     '''
     Function that uses Sunfounder's code (avoid.py) to turn Yelena to the right by 3.
     
     param speed: the speed Yelena performs the movement
     param crawler: setting up Yelena's legs (Sunfounder's code)
+    param moves: number of moves to complete movement (how much to move right); [1=min, 3=max?]
     return None
     '''
     
     # Using a predefined movement command to move Yelena to the right
-    crawler.do_action('turn right angle', 1, speed) 
+    crawler.do_action('turn right angle', moves, speed) 
     time.sleep(0.2)
 
 
-def move_left(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+def move_left(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]), moves=1):
     '''
     Function that uses Sunfounder's code to turn Yelena to the left.
     
     param speed: the speed Yelena performs the movement
     param crawler: setting up Yelena's legs (Sunfounder's code)
+    param moves: number of moves to complete movement (how much to move forward); [1=min, 3=max?]
     return None
     '''
     
     # Using a predefined movement command to move Yelena to the left
-    crawler.do_action('turn left angle', 1, speed)
+    crawler.do_action('turn left angle', moves, speed)
     time.sleep(0.2)
 
 

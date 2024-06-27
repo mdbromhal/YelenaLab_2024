@@ -133,6 +133,7 @@ def main():
             # Showing the image with the centroid
             cv2.imshow("Centroid calculated in image", tmasked)
             cv2.waitKey(1)
+            
         except (ZeroDivisionError, TypeError) as e:
             print("Error finding teal in teal_detect2")
 
