@@ -46,14 +46,24 @@ def move_forward(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]), move
     time.sleep(0.2)
 
 
-def stay():
+def stand(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
     '''
-    Function that doesn't do anything as of yet. Yelena doesn't move, so she stays still.
+    Function that defines a standing pose for Yelena.
+    Format follows order: [right front],[left front],[left rear],[right rear]
     
+    param speed: the speed Yelena performs the movement(s)
+    param crawler: setting up Yelena's legs; Sunfounder's code
     return None
     '''
     
-    print("\nCommand received: STAY")
+    print("\nCommand received: STAND")
+    
+    # Defining the movement to stand
+    legs_coordinates = [[50, 50, -80], [50, 50, -80], [50, 50, -80], [50, 50, -80]]
+    
+    # Using Sunfounder's code to move Yelena to this defined position
+    crawler.do_step(legs_coordinates, speed)
+    time.sleep(0.2)
 
 
 def move_right(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]), moves=1):
@@ -86,12 +96,70 @@ def move_left(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]), moves=1
     time.sleep(0.2)
 
 
+def manual_move_right(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+    '''
+    Function that manually defines where Yelena's legs are to go to turn right.    
+    Format follows order: [right front],[left front],[left rear],[right rear]
+    
+    param speed: the speed Yelena performs movement
+    param crawler: setting up Yelena's legs (Sunfounder's code)
+    return None
+    '''
+    
+    # Defining where to put legs to prepare for movement
+    setup = [[50, 0, 0], [50, 50, 20], [50, 0, 0], [50, 50, 20]]
+    
+    # Defining where to put legs to move Yelena to the right
+    movement = [[0, 50, 0], [50, 0, 0], [0, 50, 0], [50, 0, 0]]
+    
+    # Using Sunfounder's code to pass our new setup movement
+    crawler.do_step(setup, speed)
+    time.sleep(0.2)
+    
+    # Again sending the movement to Sunfounder's code to move Yelena
+    crawler.do_step(movement, speed)
+    time.sleep(0.2)
+    
+    # Resetting Yelena's position with her legs up so she can turn again if need be
+    reset = [[50, 50, 50], [50, 50, 50], [50, 50, 50], [50, 50, 50]]
+    crawler.do_step(reset, speed)
+    time.sleep(0.2)
+
+
+def manual_move_left(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9])):
+    '''
+    Function that manually defines where Yelena's legs are to go to turn left.    
+    Format follows order: [right front],[left front],[left rear],[right rear]
+    
+    param speed: the speed Yelena performs movement
+    param crawler: setting up Yelena's legs (Sunfounder's code)
+    return None
+    '''
+    
+    # Defining where to put legs to prepare for movement
+    setup1 = [[0, 30, 0], [50, 30, 20], [0, 30, 0], [30, 0, 0]]
+    
+    # Defining where to put legs to move Yelena to the right
+    movement = [[30, 0, 0], [0, 30, 0], [30, 0, 0], [0, 30, 0]]
+    
+    # Using Sunfounder's code to pass our new setup movement
+    crawler.do_step(setup1, speed)
+    time.sleep(0.2)
+    
+    # Again sending the movement to Sunfounder's code to move Yelena
+    crawler.do_step(movement, speed)
+    time.sleep(0.2)
+    
+    # Resetting Yelena's position with her legs up so she can turn again if need be
+    reset = [[50, 50, 50], [50, 50, 50], [50, 50, 50], [50, 50, 50]]
+    crawler.do_step(reset, speed)
+    time.sleep(0.2)
+
+
 def main():
     
     # Telling Yelena to sit
-    sit()
-    
-    #move_left()
+    sit() 
 
 
 if __name__ == '__main__':

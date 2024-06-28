@@ -126,14 +126,14 @@ def main():
                         print("Object to the right")
                         
                         # Using Sunfounder's code to move Yelena to the right
-                        yelena_move.move_right(speed=70, crawler=crawler)
+                        yelena_move.manual_move_right(speed=70, crawler=crawler)
                         
                     # If the centroid is to the left of the buffer
                     elif (tcx < xc) and (tcx >= 0) and angle > cbuff:
                         print("Object to the left")
                         
                         # Using Sunfounder's code to move Yelena to the left
-                        yelena_move.move_left(speed=70, crawler=crawler)
+                        yelena_move.manual_move_left(speed=70, crawler=crawler)
                     
                     # If the centroid is in the center line buffer
                     elif angle <= cbuff:
@@ -147,18 +147,18 @@ def main():
                     # So if the centroid is close to her vision's edge, we tell her to keep moving
                     
                     # If Yelena is almost on top of the centroid, keep moving forward
-                    if (tcy >=180) and (angle <= cbuff):
+                    #if (tcy >=180) and (angle <= cbuff):
                         
                         # Move forward so Yelena is on top of the teal
-                        print("Moving on top of teal")
+                        #print("Moving on top of teal")
                         
                         # Using Sunfounder's code to move Yelena forward
-                        yelena_move.move_forward(speed=70, crawler=crawler, moves=5)
+                        #yelena_move.move_forward(speed=70, crawler=crawler, moves=3)
                         
                         # Right now having her sit on the teal; later add turning to look for more
-                        yelena_move.sit(speed=50, crawler=crawler)
+                        #yelena_move.sit(speed=50, crawler=crawler)
                         
-                        solving = False
+                        #solving = False
                         
                 # Increase the count by one so Yelena takes a command every 1/8th iteration
                 count += 1
@@ -178,7 +178,7 @@ def main():
                     print("No teal found, looking for teal")
                         
                     # Having Yelena turn when she finds no teal
-                    yelena_move.move_left(crawler=crawler, moves=3)
+                    yelena_move.manual_move_left(crawler=crawler)
                     
                     solved_cntdwn -= 1
             
