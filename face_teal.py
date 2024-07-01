@@ -13,51 +13,6 @@ import math
 from time import sleep
 
 
-def frame_divide(frame):
-    '''
-    Taking a frame and determining where the center line is in the frame. This can be used to
-    divide the frame into two different sections.
-    Displays the frame and the line dividng the frame.
-    
-    param frame: image frame using to determine horizontal center of frame
-    return xc: center x-coordinate of frame
-    '''
-    
-    # Determining the size of the first image (assuming all images are the same size
-    frame_shape = frame.shape
-    
-    # Dividing length of image in two to find center x coordinate
-    xc = int(frame_shape[1] / 2) # tmasked_shape = [y, x, z]
-    
-    # Optional: shows where divides between left and right of image
-    #divided_frame = cv2.line(frame, (xc, 0), (xc, int(frame_shape[0])), (255, 255, 255), 15)
-    #cv2.imshow("Divided frame", divided_frame)
-    #cv2.waitKey(1)
-    
-    return xc, frame_shape
-
-
-def angle_line_point(x, px, py):
-    '''
-    Determing the positive angle between a point and a vertical line.
-    Formula: arctangent of (x / y) = theta
-    Takes the absolute value of the subtraction between the point's x-coordinate and the line's
-        x-coordinate to calculate the horizontal distance between the point and the line. This
-        is the x in the equation.
-    Uses abs() because the point could be on the right or the left of the line.
-    
-    param x: the vertical line's x-coordinate
-    param px: the point's x-coordinate
-    param py: the point's y-coordinate
-    return angle: the angle between the point and the vertical line
-    '''
-    
-    # Calculating the angle between the point and the line
-    angle = math.atan(abs(x - px) / py)
-    
-    return angle
-
-
 def main():
     
     # If teal is detected, find the center #######################################
@@ -72,7 +27,7 @@ def main():
     tmasked = teal_detect2.teal_mask_vision(capture)
     
     # Calling frame_divide to determine center x-coordinate of frame
-    xc, tmasked_shape = frame_divide(tmasked)
+    xc, tmasked_shape = teal_detect2.frame_divide(tmasked)
     
     # Setting the solving flag to True so Yelena searches for teal and moves towards it until solved maze
     solving = True
@@ -81,7 +36,7 @@ def main():
     count = 0
     
     # Setting a solved count to use if Yelena can't find anymore teal
-    solved_cntdwn = 8 # Calculated roughly that each turn is ~ 20 degrees
+    solved_cntdwn = 9 # Calculated roughly that each turn is ~ 20 degrees
     
     # while loop runs until Yelena can't find anymore teal
     while solving:
@@ -92,6 +47,7 @@ def main():
             # Have Yelena sit down and stop the loop
             yelena_move.sit(crawler=crawler)
             
+            print("Found no more teal; stopping program.")
             # Stop the while loop
             solving = False
         
@@ -110,11 +66,12 @@ def main():
                 tcx, tcy = teal_detect2.find_center(tmasked)
                 
                 # Determining the angle of the centroid from the center buffer
-                angle = angle_line_point(xc, tcx, tcy)
+                angle = teal_detect2.angle_line_point(xc, tcx, tcy)
                 
                 # Defining the angle of the center buffer
                 cbuff = 1
                 
+                # Only taking a frame 1/8th of the time to make sure it's a current frame
                 if (count % 8) == 1:
                     
                     # Setting the solving countdown to 4 again
@@ -122,18 +79,20 @@ def main():
                     solved_cntdwn = 8
                     
                     # If the centroid is to the right of the buffer
-                    if (tcx > xc) and angle > cbuff:
+                    if teal_detect2.centroid_right(tcx, xc, angle, cbuff):
+
                         print("Object to the right")
                         
                         # Using Sunfounder's code to move Yelena to the right
-                        yelena_move.manual_move_right(speed=70, crawler=crawler)
+                        yelena_move.manual_move_right(crawler=crawler, frac=2)
                         
                     # If the centroid is to the left of the buffer
-                    elif (tcx < xc) and (tcx >= 0) and angle > cbuff:
+                    elif teal_detect2.centroid_left(tcx, xc, angle, cbuff):
+
                         print("Object to the left")
                         
                         # Using Sunfounder's code to move Yelena to the left
-                        yelena_move.manual_move_left(speed=70, crawler=crawler)
+                        yelena_move.manual_move_left(crawler=crawler, frac=2)
                     
                     # If the centroid is in the center line buffer
                     elif angle <= cbuff:
@@ -141,51 +100,30 @@ def main():
                         
                         # If teal is on a wall in front of Yelena
                         
-                        # From avoid.py by Sunfounder
-#                         from picrawler import Picrawler
-#                         from robot_hat import TTS, Music
-#                         from robot_hat import Ultrasonic
-#                         from robot_hat import Pin
-#                         import time
-#                         import os
-# 
-#                         tts = TTS()
-#                         music = Music()
-# 
-#                         crawler = Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]) 
-#                         #crawler.set_offset([0,0,0,0,0,0,0,0,0,0,0,0])
-#                         sonar = Ultrasonic(Pin("D2") ,Pin("D3"))
-# 
-#                         alert_distance = 15
-# 
-#                         speed = 100
-# 
-#                         def main():
-#                             distance = sonar.read()
-#                             print(distance)
-#                             if distance < 0:
-#                                 pass
-#                             elif distance <= alert_distance:
-#                                 try:
-#                                     music.sound_effect_threading('./sounds/sign.wav')
-#                                 except Exception as e:
-#                                     print(e)
-#                                 crawler.do_action('turn left angle',3,speed)
-#                                 time.sleep(0.2)
-#                             else :
-#                                 crawler.do_action('forward', 1,speed)
-#                                 time.sleep(0.2)
+                        # Sunfounder's code from avoid.py
+                        # Using Pins D2 and D3 for sonar
                         sonar = Ultrasonic(Pin("D2"), Pin("D3"))
                         
+                        # Setting the distance we want Yelena to sit away from the teal marker
                         alert_distance = 15
                         
+                        # Reading from the sonar how far the teal is
                         distance = sonar.read()
                         print(distance)
                         
-                        if distance <= alert_distance
+                        # If the teal marker is on a wall in front of her at the predefined distance
+                        if distance <= alert_distance:
+                            
+                            # Have her check for more teal...
+                            
+                            # Sit down in front of the teal
+                            yelena_move.sit(speed=50, crawler=crawler)
                         
-                        # Using Sunfounder's code to move Yelena forward
-                        yelena_move.move_forward(speed=70, crawler=crawler)
+                        # Else, if the teal is on the ground or not close enough
+                        else:
+                            
+                            # Using Sunfounder's code to move Yelena forward
+                            yelena_move.move_forward(speed=70, crawler=crawler)
                         
                     # If the teal center is in the bottom of her vision, she's close
                     # But she'll stop coming for it when she gets close because she'll stop seeing it
@@ -209,21 +147,21 @@ def main():
                 count += 1
                 
                 # Drawing a circle on center and showing feed
-                cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
-                cv2.line(tmasked, (xc, 0), (xc, int(tmasked_shape[0])), (255, 255, 255), 5)
-                cv2.imshow("Centroid calculated in image", tmasked)
-                cv2.waitKey(1)
+                #cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
+                #cv2.line(tmasked, (xc, 0), (xc, int(tmasked_shape[0])), (255, 255, 255), 5)
+                #cv2.imshow("Centroid calculated in image", tmasked)
+                #cv2.waitKey(1)
             
             except (TypeError, ZeroDivisionError) as e:
                 
-                print("No teal found")
+                #print("No teal found")
                 
                 # Using the count to make sure Yelena is using a recent frame
                 if (count % 8) == 1:
-                    print("No teal found, looking for teal")
+                    print("No teal found, looking for teal. Turn Countdown: ", solved_cntdwn)
                         
                     # Having Yelena turn when she finds no teal
-                    yelena_move.manual_move_left(crawler=crawler)
+                    yelena_move.manual_move_left(crawler=crawler, frac=2)
                     
                     solved_cntdwn -= 1
             

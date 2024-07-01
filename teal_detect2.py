@@ -107,6 +107,82 @@ def find_center(tmasked):
         ("Error finding center in teal_detect2")
 
 
+# Used in face_teal.py
+def frame_divide(frame):
+    '''
+    Taking a frame and determining where the center line is in the frame. This can be used to
+    divide the frame into two different sections.
+    Displays the frame and the line dividng the frame.
+    
+    param frame: image frame using to determine horizontal center of frame
+    return xc: center x-coordinate of frame
+    '''
+    
+    # Determining the size of the first image (assuming all images are the same size
+    frame_shape = frame.shape
+    
+    # Dividing length of image in two to find center x coordinate
+    xc = int(frame_shape[1] / 2) # tmasked_shape = [y, x, z]
+    
+    # Optional: shows where divides between left and right of image
+    #divided_frame = cv2.line(frame, (xc, 0), (xc, int(frame_shape[0])), (255, 255, 255), 15)
+    #cv2.imshow("Divided frame", divided_frame)
+    #cv2.waitKey(1)
+    
+    return xc, frame_shape
+
+
+def angle_line_point(x, px, py):
+    '''
+    Determing the positive angle between a point and a vertical line.
+    Formula: arctangent of (x / y) = theta
+    Takes the absolute value of the subtraction between the point's x-coordinate and the line's
+        x-coordinate to calculate the horizontal distance between the point and the line. This
+        is the x in the equation.
+    Uses abs() because the point could be on the right or the left of the line.
+    
+    param x: the vertical line's x-coordinate
+    param px: the point's x-coordinate
+    param py: the point's y-coordinate
+    return angle: the angle between the point and the vertical line
+    '''
+    
+    # Calculating the angle between the point and the line
+    angle = math.atan(abs(x - px) / py)
+    
+    return angle
+
+
+def centroid_right(centroid_x, center_x, angle, center_buffer=0):
+    '''
+    Determines if the centroid is to the right of a vertical center line and buffer.
+
+    param centroid_x: x-coordinate of the centroid
+    param center_x: x-coordinate of the frame's center line
+    param angle: angle of the centroid from the center of the frame.
+    param center_buffer: the angle of buffer to be considered neither to the right or left
+
+    return True if centroid is to the right of the center line or False if it is not
+    '''
+
+    return (centroid_x > center_x) and (angle > center_buffer)
+
+
+def centroid_left(centroid_x, center_x, angle, center_buffer=0):
+    '''
+    Determines if the centroid is to the left of a vertical center line and buffer.
+
+    param centroid_x: x-coordinate of the centroid
+    param center_x: x-coordinate of the frame's center line
+    param angle: angle of the centroid from the center of the frame.
+    param center_buffer: the angle of buffer to be considered neither to the right or left
+
+    return True if centroid is to the right of the center line or False if it is not    
+    '''
+
+    return (centroid_x < center_x) and (centroid_x >= 0) and (angle > center_buffer)
+
+
 def main():
     
     # Start camera, 0 means using USB camera (1 is using raspberry pi camera)
