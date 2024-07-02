@@ -52,6 +52,8 @@ def main():
     # Using sonar to detect distance from object in front
     dist = sonar_distance()
 
+    print("Distance: ", dist)
+
     # Seeing if distance is within 25 = alert distance
     print(within_alert_distance(dist, 25))
 
