@@ -4,13 +4,14 @@
 # Date: 11 June 2024
 # Purpose: script that connects movements with detecting teal, so Yelena turns to face teal disk
 
-# Importing packages and python scripts
+# Importing packages 
 import cv2 # Computer vision package
+
+# Importing python scripts
 import teal_detect2 # Detects teal color and finds center
 from picrawler import Picrawler # Sunfounder's code we can use to move Yelena
 import yelena_move # Library that has Yelena's personalized movements
-import math
-from time import sleep
+import sonar # Functions that use Yelena's Ultrasonic sensor to determine how far away something is in front of her
 
 
 def main():
@@ -37,19 +38,29 @@ def main():
     
     # Setting a solved count to use if Yelena can't find anymore teal
     solved_cntdwn = 9 # Calculated roughly that each turn is ~ 20 degrees
+
+    # Setting the distance we want Yelena to sit away from the teal marker, using sonar
+    alert_distance = 15
     
     # while loop runs until Yelena can't find anymore teal
     while solving:
         
         # Yelena has turned arount 180 degrees and can't find teal
         if solved_cntdwn == 0:
-            
+            print("Found no more teal; stopping program.")
+
             # Have Yelena sit down and stop the loop
             yelena_move.sit(crawler=crawler)
-            
-            print("Found no more teal; stopping program.")
+
             # Stop the while loop
             solving = False
+        
+        # If Yelena is ~180 degrees into her turn
+        elif solved_cntdwn in [4, 5]:
+            print("Skipping where we've been")
+
+            # Have her keep going left so she doesn't go the way she came
+            yelena_move.manual_move_left(crawler=crawler, frac=2)
         
         # Else, Yelena is still searching for/following teal
         else:
@@ -99,31 +110,23 @@ def main():
                         print("Object in center buffer")
                         
                         # If teal is on a wall in front of Yelena
-                        
-                        # Sunfounder's code from avoid.py
-                        # Using Pins D2 and D3 for sonar
-                        sonar = Ultrasonic(Pin("D2"), Pin("D3"))
-                        
-                        # Setting the distance we want Yelena to sit away from the teal marker
-                        alert_distance = 15
-                        
                         # Reading from the sonar how far the teal is
-                        distance = sonar.read()
-                        print(distance)
+                        #distance = sonar.sonar_distance()
+                        #print(distance)
                         
                         # If the teal marker is on a wall in front of her at the predefined distance
-                        if distance <= alert_distance:
+                        #if sonar.within_alert_distance(distance, alert_distance):
                             
                             # Have her check for more teal...
                             
                             # Sit down in front of the teal
-                            yelena_move.sit(speed=50, crawler=crawler)
+                            #yelena_move.sit(speed=50, crawler=crawler)
                         
                         # Else, if the teal is on the ground or not close enough
-                        else:
+                        #else:
                             
                             # Using Sunfounder's code to move Yelena forward
-                            yelena_move.move_forward(speed=70, crawler=crawler)
+                        yelena_move.move_forward(speed=70, crawler=crawler)
                         
                     # If the teal center is in the bottom of her vision, she's close
                     # But she'll stop coming for it when she gets close because she'll stop seeing it
@@ -167,10 +170,6 @@ def main():
             
                 # Incrementing the count by one so Yelena takes a command every 1/8th iteration
                 count += 1
-                
-            # To save memory, we could only run find_center if there are enough teal pixels
-            # But right now there's no easy way to do this that takes less memory than just running
-            # this function. May improve in future.
 
 
 if __name__ == '__main__':

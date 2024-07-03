@@ -11,6 +11,7 @@
 # Import needed modules
 import cv2
 import numpy as np
+import math
 
 
 def teal_mask_vision(cap):
