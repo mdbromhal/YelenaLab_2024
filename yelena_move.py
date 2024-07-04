@@ -107,11 +107,21 @@ def manual_move_right(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]),
     return None
     '''
     
+    # Want 100% of Yelena's movement
+    if frac <= 1:
+        x = 0 # Setting her leg on the y-axis, which is the max movement
+    
+    # Else want 25% of Yelena's movement
+    elif frac > 1:
+        x = 50  # Setting it so her legs move ~1/4 of the way, so she turns less
+
     # Defining where to put legs to prepare for movement
-    setup = [[50 // frac, 0, 0], [50 // frac, 50 // frac, 20], [50 // frac, 0, 0], [50 // frac, 50 // frac, 20]]
+    # `setup = [[50 // frac, 0, 0], [50 // frac, 50 // frac, 20], [50 // frac, 0, 0], [50 // frac, 50 // frac, 20]]`
+    setup = [[50, 0, 0], [50, 50, 20], [50, 0, 0], [50, 50, 20]]
     
     # Defining where to put legs to move Yelena to the right
-    movement = [[0, 50 // frac, 0], [50 // frac, 0, 0], [0, 50 // frac, 0], [50 // frac, 0, 0]]
+    # movement = [[0, 50 // frac, 0], [50 // frac, 0, 0], [0, 50 // frac, 0], [50 // frac, 0, 0]]
+    movement = [[x, 50, 0], [x, 50, 0], [x, 50, 0], [x, 50, 0]]
     
     # Using Sunfounder's code to pass our new setup movement
     crawler.do_step(setup, speed)
@@ -137,12 +147,22 @@ def manual_move_left(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]), 
     frac: fraction to determine how much to split up turn. 1 = full turn, 2 = 50% turn, ect.
     return None
     '''
-    
+
+    # Want 100% of Yelena's movement
+    if frac <= 1:
+        y = 0 # Setting her leg on the x-axis, which is the max movement
+
+    # Else want 25% of Yelena's movement
+    elif frac > 1:
+        y = 50 # Setting it so her legs move ~1/4 of the way, so she turns less
+
     # Defining where to put legs to prepare for movement
-    setup1 = [[0, 50 // frac, 0], [50 // frac, 50 // frac, 20], [0, 50 // frac, 0], [50 // frac, 0, 0]]
+    # setup1 = [[0, 50 // frac, 0], [50 // frac, 50 // frac, 20], [0, 50 // frac, 0], [50 // frac, 0, 0]]
+    setup1 = [[0, 50, 0], [50, 50, 20], [0, 50, 0], [50, 0, 0]]
     
     # Defining where to put legs to move Yelena to the right
-    movement = [[50 // frac, 0, 0], [0, 50 // frac, 0], [50 // frac, 0, 0], [0, 50 // frac, 0]]
+    # movement = [[50 // frac, 0, 0], [0, 50 // frac, 0], [50 // frac, 0, 0], [0, 50 // frac, 0]]
+    movement = [[50, y, 0], [50, y, 0], [50, y, 0], [50, y, 0]]
     
     # Using Sunfounder's code to pass our new setup movement
     crawler.do_step(setup1, speed)
