@@ -37,7 +37,7 @@ def main():
     count = 0
     
     # Setting a solved count to use if Yelena can't find anymore teal
-    solved_cntdwn = 9 # Calculated roughly that each turn is ~ 20 degrees
+    solved_cntdwn = 10 # Calculated roughly that each turn is ~ 20 degrees
 
     # Setting right and left counts so we can tell when Yelena is stuck going left and right
     rcount = 0
@@ -93,7 +93,7 @@ def main():
                     
                     # Setting the solving countdown to 4 again
                     # Making sure Yelena resets the countdown each time she finds teal again
-                    solved_cntdwn = 8
+                    solved_cntdwn = 10
                     
                     # If the centroid is to the right of the buffer
                     if teal_detect2.centroid_right(tcx, xc, angle, cbuff):

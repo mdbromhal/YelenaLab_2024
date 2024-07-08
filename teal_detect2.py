@@ -208,8 +208,8 @@ def main():
             cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
             
             # Showing the image with the centroid
-            cv2.imshow("Centroid calculated in image", tmasked)
-            cv2.waitKey(1)
+            #cv2.imshow("Centroid calculated in image", tmasked)
+            #cv2.waitKey(1)
             
         except (ZeroDivisionError, TypeError) as e:
             print("Error finding teal in teal_detect2")
