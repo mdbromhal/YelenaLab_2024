@@ -101,7 +101,7 @@ def main():
                         print("Object to the right")
                         
                         # When Yelena has turned right at least once and turned left at least twice (indicating that she's probably stuck), do a smaller turn
-                        if (rcount >= 1) and (lcount >=2):
+                        if (rcount >= 1) and (lcount >=1):
                             print("Seems to be stuck; doing smaller angle turn to the right")
 
                             # Moving to the right but with a smaller turn
@@ -121,7 +121,7 @@ def main():
                         print("Object to the left")
                         
                         # When Yelena has turned right at least twice and turned left at least once (indicating that she's probably stuck), do a smaller turn
-                        if (rcount >= 2) and (lcount >=1):
+                        if (rcount >= 1) and (lcount >=1):
                             print("Seems to be stuck; doing smaller angle turn to the left")
 
                             # Moving to the left but with a smaller turn
