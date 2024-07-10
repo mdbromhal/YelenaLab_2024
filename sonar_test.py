@@ -43,11 +43,11 @@ def iterate_pins(pins):
    for pin1 in pins:
       # Try with every pin
       for pin2 in pins:
-         
-         # Append combination of pins tried to tried list
-         tried.append((pin1, pin2))
 
          try:
+
+            # Append combination of pins tried to tried list
+            tried.append((pin1, pin2))
 
             # Test with sonar
             sonar = Ultrasonic(Pin(pin1), Pin(pin2))
