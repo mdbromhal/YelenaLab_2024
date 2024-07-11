@@ -64,7 +64,7 @@ def main():
             print("Skipping where we've been; Turn countdown: ", solved_cntdwn)
 
             # Have her keep going left so she doesn't go the way she came
-            yelena_move.manual_move_left(crawler=crawler, frac=1)
+            yelena_move.manual_move_left(crawler=crawler, frac=1, speed=70)
 
             solved_cntdwn -= 1
         
@@ -105,15 +105,16 @@ def main():
                             print("Seems to be stuck; doing smaller angle turn to the right")
 
                             # Moving to the right but with a smaller turn
-                            yelena_move.manual_move_right(crawler=crawler, frac=2)
+                            yelena_move.manual_move_right(crawler=crawler, frac=2, speed=70)
 
                         # Else, if she's not stuck, move right normally
                         else:
                             # Using Sunfounder's code to move Yelena to the right
-                            yelena_move.manual_move_right(crawler=crawler, frac=1)
+                            yelena_move.manual_move_right(crawler=crawler, frac=1, speed=70)
 
                         # Increasing the count so we can keep track if Yelena is stuck moving left and right
                         rcount += 1
+                        print("Rcount: ", rcount)
                         
                     # If the centroid is to the left of the buffer
                     elif teal_detect2.centroid_left(tcx, xc, angle, cbuff):
@@ -125,15 +126,16 @@ def main():
                             print("Seems to be stuck; doing smaller angle turn to the left")
 
                             # Moving to the left but with a smaller turn
-                            yelena_move.manual_move_left(crawler=crawler, frac=2)
+                            yelena_move.manual_move_left(crawler=crawler, frac=2, speed=70)
                         
                         # Else, if she's not stuck, move left normally
                         else:
                             # Using Sunfounder's code to move Yelena to the left
-                            yelena_move.manual_move_left(crawler=crawler, frac=1)
+                            yelena_move.manual_move_left(crawler=crawler, frac=1, speed=70)
 
                         # Increasing the count so we can keep track if Yelena is stuck moving left and right
                         lcount += 1
+                        print("Lcount: ", lcount)
                     
                     # If the centroid is in the center line buffer
                     elif angle <= cbuff:
@@ -198,7 +200,7 @@ def main():
                     print("No teal found, looking for teal. Turn Countdown: ", solved_cntdwn)
                         
                     # Having Yelena turn when she finds no teal
-                    yelena_move.manual_move_left(crawler=crawler, frac=1)
+                    yelena_move.manual_move_left(crawler=crawler, frac=1, speed=70)
                     
                     solved_cntdwn -= 1
             
