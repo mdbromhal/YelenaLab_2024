@@ -101,7 +101,7 @@ def main():
                         print("Object to the right")
                         
                         # When Yelena has turned right at least once and turned left at least twice (indicating that she's probably stuck), do a smaller turn
-                        if (rcount >= 1) and (lcount >=1):
+                        if (rcount > 0) and (lcount > 0):
                             print("Seems to be stuck; doing smaller angle turn to the right")
 
                             # Moving to the right but with a smaller turn
@@ -114,6 +114,7 @@ def main():
 
                         # Increasing the count so we can keep track if Yelena is stuck moving left and right
                         rcount += 1
+                        print("Lcount: ", lcount)
                         print("Rcount: ", rcount)
                         
                     # If the centroid is to the left of the buffer
@@ -136,34 +137,22 @@ def main():
                         # Increasing the count so we can keep track if Yelena is stuck moving left and right
                         lcount += 1
                         print("Lcount: ", lcount)
+                        print("Rcount: ", rcount)
+                        
                     
                     # If the centroid is in the center line buffer
                     elif angle <= cbuff:
                         print("Object in center buffer")
-                        
-                        # If teal is on a wall in front of Yelena
-                        # Reading from the sonar how far the teal is
-                        #distance = sonar.sonar_distance()
-                        #print(distance)
-                        
-                        # If the teal marker is on a wall in front of her at the predefined distance
-                        #if sonar.within_alert_distance(distance, alert_distance):
                             
-                            # Have her check for more teal...
-                            
-                            # Sit down in front of the teal
-                            #yelena_move.sit(speed=50, crawler=crawler)
-                        
-                        # Else, if the teal is on the ground or not close enough
-                        #else:
-                            
-                            # Using Sunfounder's code to move Yelena forward
+                        # Using Sunfounder's code to move Yelena forward
                         yelena_move.move_forward(speed=70, crawler=crawler)
 
                         # When Yelena goes forward, we know she's not stuck, so reset the counts
                         lcount = 0
                         rcount = 0
                         
+                        print("Rcount: ", rcount)
+                        print("Lcount: ", lcount)
                     # If the teal center is in the bottom of her vision, she's close
                     # But she'll stop coming for it when she gets close because she'll stop seeing it
                     # So if the centroid is close to her vision's edge, we tell her to keep moving

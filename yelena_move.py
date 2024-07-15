@@ -181,7 +181,11 @@ def manual_move_left(speed=50, crawler=Picrawler([10,11,12,4,5,6,1,2,3,7,8,9]), 
 def main():
     
     # Telling Yelena to sit
-    sit() 
+    #sit() 
+
+    manual_move_right(frac=1, speed=70)
+
+    manual_move_right(frac=2, speed=70)
 
 
 if __name__ == '__main__':
