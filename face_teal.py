@@ -37,14 +37,15 @@ def main():
     count = 0
     
     # Setting a solved count to use if Yelena can't find anymore teal
-    solved_cntdwn = 10 # Calculated roughly that each turn is ~ 20 degrees
+    solved_cntdwn = 10 # Works on hardwood floor
+    # solved_cntdwn = 12 # Works on carpet
 
     # Setting right and left counts so we can tell when Yelena is stuck going left and right
     rcount = 0
     lcount=0
 
-    # Setting the distance we want Yelena to sit away from the teal marker, using sonar
-    alert_distance = 15
+    # Setting speed for Yelena to perform movements
+    speed_ft = 100
     
     # while loop runs until Yelena can't find anymore teal
     while solving:
@@ -54,17 +55,18 @@ def main():
             print("Found no more teal; stopping program.")
 
             # Have Yelena sit down and stop the loop
-            yelena_move.sit(crawler=crawler)
+            yelena_move.sit(crawler=crawler, speed=speed_ft)
 
             # Stop the while loop
             solving = False
         
         # If Yelena is ~180 degrees into her turn
-        elif solved_cntdwn in [5, 4]:
+        elif solved_cntdwn in [5, 4]: # Works for hardwood floors
+        # elif solved_cntdwn in [5, 6]: # Works for carpet
             print("Skipping where we've been; Turn countdown: ", solved_cntdwn)
 
             # Have her keep going left so she doesn't go the way she came
-            yelena_move.manual_move_left(crawler=crawler, frac=1, speed=70)
+            yelena_move.manual_move_left(crawler=crawler, frac=1, speed=speed_ft)
 
             solved_cntdwn -= 1
         
@@ -105,12 +107,12 @@ def main():
                             print("Seems to be stuck; doing smaller angle turn to the right")
 
                             # Moving to the right but with a smaller turn
-                            yelena_move.manual_move_right(crawler=crawler, frac=2, speed=70)
+                            yelena_move.manual_move_right(crawler=crawler, frac=2, speed=speed_ft)
 
                         # Else, if she's not stuck, move right normally
                         else:
                             # Using Sunfounder's code to move Yelena to the right
-                            yelena_move.manual_move_right(crawler=crawler, frac=1, speed=70)
+                            yelena_move.manual_move_right(crawler=crawler, frac=1, speed=speed_ft)
 
                         # Increasing the count so we can keep track if Yelena is stuck moving left and right
                         rcount += 1
@@ -127,12 +129,12 @@ def main():
                             print("Seems to be stuck; doing smaller angle turn to the left")
 
                             # Moving to the left but with a smaller turn
-                            yelena_move.manual_move_left(crawler=crawler, frac=2, speed=70)
+                            yelena_move.manual_move_left(crawler=crawler, frac=2, speed=speed_ft)
                         
                         # Else, if she's not stuck, move left normally
                         else:
                             # Using Sunfounder's code to move Yelena to the left
-                            yelena_move.manual_move_left(crawler=crawler, frac=1, speed=70)
+                            yelena_move.manual_move_left(crawler=crawler, frac=1, speed=speed_ft)
 
                         # Increasing the count so we can keep track if Yelena is stuck moving left and right
                         lcount += 1
@@ -145,7 +147,7 @@ def main():
                         print("Object in center buffer")
                             
                         # Using Sunfounder's code to move Yelena forward
-                        yelena_move.move_forward(speed=70, crawler=crawler)
+                        yelena_move.move_forward(speed=speed_ft, crawler=crawler)
 
                         # When Yelena goes forward, we know she's not stuck, so reset the counts
                         lcount = 0
@@ -189,7 +191,7 @@ def main():
                     print("No teal found, looking for teal. Turn Countdown: ", solved_cntdwn)
                         
                     # Having Yelena turn when she finds no teal
-                    yelena_move.manual_move_left(crawler=crawler, frac=1, speed=70)
+                    yelena_move.manual_move_left(crawler=crawler, frac=1, speed=speed_ft)
                     
                     solved_cntdwn -= 1
             
