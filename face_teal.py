@@ -12,17 +12,13 @@ import teal_detect2 # Detects teal color and finds center
 from picrawler import Picrawler # Sunfounder's code we can use to move Yelena
 import yelena_move # Library that has Yelena's personalized movements
 import sonar # Functions that use Yelena's Ultrasonic sensor to determine how far away something is in front of her
+import pandas as pd
 
 
 def main():
     
     # Read environmental file
-    with open("env_file.txt", 'r') as env_data:
-        # Process data here
-        love_python = 1
-
-        print(env_data.read())
-        print(env_data.readline(5))
+    env_data = pd.read_csv('env_data.csv')
         
     # If teal is detected, find the center #######################################
     

@@ -4,16 +4,13 @@
 # Date: 23 July 2024
 # Purpose: Takes in from user and camera details about environment which are then used in face_teal.py to help Yelena funciton better
 
-# with open("env_file.txt", 'w') as env_file:
-#     env_file.write("Data")
-#     env_file.writelines("Data")
-
 # Importing necessary modules
 import numpy as np
 import pandas as pd
 import sys
 import cv2
-
+from PIL import Image
+#import colorsys
 
 
 def choose_surface():
@@ -98,11 +95,71 @@ def isbright(image, dim=10, thresh=0.5):
     return (np.mean(L) > thresh), np.mean(L) # MB added second item to return
 
 
+def find_hsv_teal():
+    """
+    Takes a picture, finds the center pixel of the image, and then finds the rgb value of that pixel using PIL. 
+    Then converts to hsv with OpenCV.
+    Sources referenced:
+        - https://www.geeksforgeeks.org/python-opencv-getting-and-setting-pixels/
+        - https://blog.finxter.com/5-best-ways-to-find-the-hsv-values-of-a-color-using-opencv-python/
+        - https://stackoverflow.com/questions/2612361/convert-rgb-values-to-equivalent-hsv-values-using-python
+        - https://www.tutorialspoint.com/how-to-find-the-hsv-values-of-a-color-using-opencv-python
+    
+    return hsv_lower: int, the lower limit of the hsv value calculated
+    return color_hsv: int, the hsv value of the center pixel of the image
+    return hsv_upper: int, the upper limit of the hsv value calculated
+    """
+
+    try:
+
+        # Start camera, 0 means using USB camera (1 is using raspberry pi camera)
+        print("Taking a photo...")
+        capture = cv2.VideoCapture(0)
+
+        # Getting frame from video capture
+        ret, img = capture.read()
+
+        # Check size of frame
+        img_size = img.shape
+        # print(img_size, "Img size")
+
+        # Get middle pixel
+        # mid_pix = img[img_size[0] // 2][img_size[1] // 2]
+
+        # Saving image with middel pixel drawn as a white dot for reference
+        # cv2.circle(img, (img_size[1] // 2, img_size[0] // 2), 5, (255, 255, 255), -1)
+        cv2.imwrite("find_hsv_teal.jpg", img)
+        
+        # Opening the image with PIL to get the rgb of the pixel in the middle of the image
+        image = Image.open("find_hsv_teal.jpg")
+        r, g, b = image.getpixel((img_size[1] // 2, img_size[0] // 2))
+
+        # Converting the rgb values to a numpy array in uint8 format
+        color_rgb = np.uint8([[[r, g, b]]])
+
+        # Converting the rgb values to hsv values with open CV
+        color_hsv = cv2.cvtColor(color_rgb, cv2.COLOR_RGB2HSV)
+
+        # Identifying the lower and upper limits of the hsv
+        hsv_lower = color_hsv[0][0][0] - 10, 100, 100
+        hsv_upper = color_hsv[0][0][0] + 10, 255, 255
+
+        # Another way of finding the hsv values from the rgb values
+        # print(colorsys.rgb_to_hsv(r, g, b))
+        
+        return hsv_lower, color_hsv, hsv_upper
+
+    except (cv2.error, AttributeError) as e:
+            print(e)
+            print("Camera issue. Wrong port?")
+
+
 def main():
     
     # Welcoming user
     print("This script is used to identify environmental characteristics in which Yelena is going to be. \nChoose the most appropriate option at each choice, and your answers will be logged in a file" + 
           " that will be accessed by other scripts used to direct Yelena's movement. \nPress cntrl-c to stop.")
+    print("Please make sure you are in the directory you want to be in. All photos will be stored wherever you are running the script in the terminal.")
     
     # Returning the surface user has chosen, if done correctly
     surface = choose_surface()
@@ -111,34 +168,43 @@ def main():
     try:
         # Returning the brightness of the environment
         bright, brightness = find_brightness()
-        print("\nBrightness is", brightness, "which is bright with this threshold?", bright)
+        print("\nBrightness stored as: ", brightness)
+        print("Bright (True / False): ", bright)
         
     except TypeError as e:
         print(e)
         print("Issue with unpacking returned values")
 
     # Determining the hsv value of the teal in front of Yelena, given current environmental conditions
-    move_on = input("Please place a piece of teal paper in front of Yelena's camera, flat on the surface. Enter 'ok' when you have done so: ")
+    move_on = input("\nPlease place a piece of teal paper in front of Yelena's camera, flat on the surface, so that it's all she sees. \nEnter 'ok' when you have done so: ")
 
     if move_on == 'ok':
-        pass
+
+        try:
+            # Send to function to find the hsv value of the middle pixel from rgb
+            lowerhsv, actualhsv, upperhsv = find_hsv_teal()
+        
+        except TypeError as e:
+            print(e)
+            print("Issue with unpacking returned variables")
+
     else:
         print("Exiting program. Please try again.")
         sys.exit()
 
     # Defining data to be written to the file
-    # env_data = []
+    env_data = [[surface, brightness, bright, actualhsv, lowerhsv, upperhsv]]
     
     # # Defining the columns to be used in the csv file for organization
-    # env_columns = ['Teal_Color', 'Surface']
+    env_columns = ['Surface_Type', 'Brightness', 'Bright_(T/F)', 'Actual_HSV', 'Lower_Limit_HSV', 'Upper_Limit_HSV']
 
-    # df = pd.DataFrame(env_data, columns=env_columns)
+    data_df = pd.DataFrame(env_data, columns=env_columns)
 
-    # df.to_csv('/home/mickey/scripts/Yelena_dfs/env_data.csv', index=False)
+    data_df.to_csv('/home/mickey/scripts/Yelena_dfs/env_data.csv', index=False)
     
-    # df = pd.read_csv('env_data.csv')
+    data = pd.read_csv('env_data.csv')
     
-    # print(df)
+    print("\n", data)
 
 
 if __name__ == "__main__":
