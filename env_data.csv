@@ -1,2 +1,2 @@
 Surface_Type,Brightness,Bright_(T/F),Actual_HSV,Lower_Limit_HSV,Upper_Limit_HSV
-Non-slip hardwood,0.6704040404040403,True,[[[ 95 144 163]]],"(85, 100, 100)","(105, 255, 255)"
+Non-slip hardwood,0.7652068805206881,True,[[[100 127 255]]],"(90, 100, 100)","(110, 255, 255)"

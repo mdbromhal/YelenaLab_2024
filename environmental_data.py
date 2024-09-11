@@ -10,6 +10,7 @@ import pandas as pd
 import sys
 import cv2
 from PIL import Image
+import time
 #import colorsys
 
 
@@ -68,7 +69,6 @@ def find_brightness():
 
         # Getting frame from video capture
         ret, frame = cap.read()
-        
         # Sending frame to is_bright function from https://github.com/imneonizer/How-to-find-if-an-image-is-bright-or-dark
         print("Determining if image is within brightness threshold...")
         bright, brightness = isbright(frame, dim=15)
@@ -77,7 +77,6 @@ def find_brightness():
         cv2.imwrite("brightness_testframe.jpg", frame)
 
         return bright, brightness
-    
     except cv2.error as e:
         print(e)
         print("Issue with camera. Check port number?")
@@ -97,14 +96,14 @@ def isbright(image, dim=10, thresh=0.5):
 
 def find_hsv_teal():
     """
-    Takes a picture, finds the center pixel of the image, and then finds the rgb value of that pixel using PIL. 
+    Takes a picture, finds the center pixel of the image, and then finds the rgb value of that pixel using PIL.
     Then converts to hsv with OpenCV.
     Sources referenced:
         - https://www.geeksforgeeks.org/python-opencv-getting-and-setting-pixels/
         - https://blog.finxter.com/5-best-ways-to-find-the-hsv-values-of-a-color-using-opencv-python/
         - https://stackoverflow.com/questions/2612361/convert-rgb-values-to-equivalent-hsv-values-using-python
         - https://www.tutorialspoint.com/how-to-find-the-hsv-values-of-a-color-using-opencv-python
-    
+
     return hsv_lower: int, the lower limit of the hsv value calculated
     return color_hsv: int, the hsv value of the center pixel of the image
     return hsv_upper: int, the upper limit of the hsv value calculated
@@ -128,8 +127,8 @@ def find_hsv_teal():
 
         # Saving image with middel pixel drawn as a white dot for reference
         # cv2.circle(img, (img_size[1] // 2, img_size[0] // 2), 5, (255, 255, 255), -1)
-        cv2.imwrite("find_hsv_teal.jpg", img)
-        
+        timestamp = time.strftime('%Y%m%d%H%M%S')
+        cv2.imwrite(str(timestamp) + "find_hsv_teal.jpg", img)
         # Opening the image with PIL to get the rgb of the pixel in the middle of the image
         image = Image.open("find_hsv_teal.jpg")
         r, g, b = image.getpixel((img_size[1] // 2, img_size[0] // 2))
@@ -146,7 +145,6 @@ def find_hsv_teal():
 
         # Another way of finding the hsv values from the rgb values
         # print(colorsys.rgb_to_hsv(r, g, b))
-        
         return hsv_lower, color_hsv, hsv_upper
 
     except (cv2.error, AttributeError) as e:
@@ -155,22 +153,18 @@ def find_hsv_teal():
 
 
 def main():
-    
     # Welcoming user
-    print("This script is used to identify environmental characteristics in which Yelena is going to be. \nChoose the most appropriate option at each choice, and your answers will be logged in a file" + 
+    print("This script is used to identify environmental characteristics in which Yelena is going to be. \nChoose the most appropriate option at each choice, and your answers will be logged in a file" +
           " that will be accessed by other scripts used to direct Yelena's movement. \nPress cntrl-c to stop.")
     print("Please make sure you are in the directory you want to be in. All photos will be stored wherever you are running the script in the terminal.")
-    
     # Returning the surface user has chosen, if done correctly
     surface = choose_surface()
     print("\nChosen surface is", surface)
-    
     try:
         # Returning the brightness of the environment
         bright, brightness = find_brightness()
         print("\nBrightness stored as: ", brightness)
         print("Bright (True / False): ", bright)
-        
     except TypeError as e:
         print(e)
         print("Issue with unpacking returned values")
@@ -183,7 +177,6 @@ def main():
         try:
             # Send to function to find the hsv value of the middle pixel from rgb
             lowerhsv, actualhsv, upperhsv = find_hsv_teal()
-        
         except TypeError as e:
             print(e)
             print("Issue with unpacking returned variables")
@@ -194,16 +187,13 @@ def main():
 
     # Defining data to be written to the file
     env_data = [[surface, brightness, bright, actualhsv, lowerhsv, upperhsv]]
-    
     # # Defining the columns to be used in the csv file for organization
     env_columns = ['Surface_Type', 'Brightness', 'Bright_(T/F)', 'Actual_HSV', 'Lower_Limit_HSV', 'Upper_Limit_HSV']
 
     data_df = pd.DataFrame(env_data, columns=env_columns)
 
     data_df.to_csv('/home/mickey/scripts/Yelena_dfs/env_data.csv', index=False)
-    
     data = pd.read_csv('env_data.csv')
-    
     print("\n", data)
 
 

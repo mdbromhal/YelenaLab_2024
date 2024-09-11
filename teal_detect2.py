@@ -34,21 +34,29 @@ def teal_mask_vision(cap):
     hsv_frame = cv2.cvtColor(cframe, cv2.COLOR_BGR2HSV)
 
     # Defining hsv ranges for teal color
-    low_teal = np.array([70, 100, 15]) # Minimum hsv values 
+    low_teal = np.array([70, 100, 15]) # [70, 100, 15] # Minimum hsv values 
     # Changed from [70, 110, 30]
     # [25, 52, 72] works for green!
     # [70, 100, 15] works for blue and teal!
     # [90, 110, 30] works for blue!
     #[70, 100, 15] works for teal!
+    # [25, 25, 25]
+    # [70, 10, 15] close
+    # [33, 100, 100] close neon green
+    # [70, 35, 45] teal a little
 
-    high_teal = np.array([102, 255, 190]) # Maximum hsv values 
+    high_teal = np.array([102, 255, 190])  # [102, 255, 190] # Maximum hsv values 
     # [102, 255, 200] works for teal!
     # [102, 255, 255] works for green!
     # [102, 255, 200] works for green and teal!
     # [102, 255, 255] works for blue and teal!
     # [102, 255, 190] works for teal in dark lighting!
     # [102, 255, 160] works for teal in bright lighting!
-
+    # [190, 190, 200]
+    # [80, 255, 160] close
+    # [(53, 255, 255)] close neon green
+    # [102, 255, 200] teal a little
+    
     # low_teal = np.array([186, 100, 15])
     # high_teal = np.array([178, 100, 90])
     
@@ -205,8 +213,8 @@ def main():
         tmasked = teal_mask_vision(cap)
         
         # Showing the masked image
-        #cv2.imshow("Teal Masked Image", tmasked)
-        #cv2.waitKey(1) # Continuing to show the live camera feed (if 0, shows one photo only)
+        cv2.imshow("Teal Masked Image", tmasked)
+        cv2.waitKey(1) # Continuing to show the live camera feed (if 0, shows one photo only)
         
         try:
             # Finding center of teal object ####################
@@ -216,7 +224,7 @@ def main():
             cv2.circle(tmasked, (tcx, tcy), 5, (255, 255, 255), -1)
             
             # Showing the image with the centroid
-            #cv2.imshow("Centroid calculated in image", tmasked)
+            # cv2.imshow("Centroid calculated in image", tmasked)
             #cv2.waitKey(1)
             print("Found teal!")
 
