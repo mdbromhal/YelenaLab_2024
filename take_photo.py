@@ -24,13 +24,20 @@ def take_photo():
         # Getting frame from video capture
         _, frame = capture.read()
         
+        # Showing image that we just took (OPTIONAL)
+        #cv2.imshow("Frame", frame)
+        #cv2.waitKey(0)
+        
         # Getting the time to use in the timestamp (Year Month Day Hour Minute Second)
         timestamp = time.strftime('%Y-%m-%d-%H-%M-%S')
+        
+        # Setting file directory and name
+        filename = "photos/" + str(timestamp) + ".jpg"
            
         # Writing frame to a jpg file in photos directory
-        cv2.imwrite("/photos/" + str(timestamp) + ".jpg", frame)
+        cv2.imwrite(filename, frame)
         
-        print(f"Saved image as {str(timestamp)} successfully!")
+        print(f"Saved image as {filename} successfully!")
         
     except cv2.error as e:
         print(e)
