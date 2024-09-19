@@ -21,7 +21,7 @@ def take_photo():
         # Start camera, 0 means using USB camera (1 is using raspberry pi camera)
         capture = cv2.VideoCapture(0)
         
-        # Getting frame from video capture
+        # Getting frame from video capture    
         _, frame = capture.read()
         
         # Showing image that we just took (OPTIONAL)
@@ -29,15 +29,20 @@ def take_photo():
         #cv2.waitKey(0)
         
         # Getting the time to use in the timestamp (Year Month Day Hour Minute Second)
-        timestamp = time.strftime('%Y-%m-%d-%H-%M-%S')
+        timestamp = time.strftime('%S.%M.%H-%m.%d.%Y')
         
         # Setting file directory and name
-        filename = "photos/" + str(timestamp) + ".jpg"
+        # filename = "photos/" + str(timestamp) + ".jpg"
+        filename = "lego_men_photos/lego-" + str(timestamp) + ".jpg"
            
         # Writing frame to a jpg file in photos directory
         cv2.imwrite(filename, frame)
         
         print(f"Saved image as {filename} successfully!")
+        
+        cv2.imshow("New Photo", frame)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
         
     except cv2.error as e:
         print(e)
